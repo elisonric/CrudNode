@@ -28,7 +28,7 @@ function menu() {
                 break;
             case 3:
                 console.clear();
-                update();
+                updateById();
                 break;
             case 4:
                 console.clear();
@@ -84,32 +84,58 @@ function list() {
     menu();
 }
 
-function update() {
+function updateById() {
     console.log("------ALTERAÇÂO------");
 
     rl.question("Digite a matricula: ", res => {
         let index = getByid(parseInt(res));
-        var people = data[index]
-        console.log("Nome: " + people.obj.name);
-        console.log("Cargo: " + people.obj.role);
+        if (index !== -1) {
+            var people = data[index]
+            console.log("Nome: " + people.obj.name);
+            console.log("Cargo: " + people.obj.role);
 
-        rl.question("\n Novo nome: ", newName => {
-            rl.question("Novo cargo: ", newRole => {
-                data[index].obj.name = newName;
-                data[index].obj.role = newRole;
-                fileUpdate(data);
-                console.log("\n\n Alterado com sucesso!");
-                setTimeout(() => {
-                    console.clear();
-                    menu();
-                }, 1000);
+            rl.question("\n Novo nome: ", newName => {
+                rl.question("Novo cargo: ", newRole => {
+                    data[index].obj.name = newName;
+                    data[index].obj.role = newRole;
+                    fileUpdate(data);
+                    console.log("\n\n Alterado com sucesso!");
+                    setTimeout(() => {
+                        console.clear();
+                        menu();
+                    }, 1000);
+                });
             });
-        });
+        } else if (res == 0) {
+            console.clear()
+            menu();
+        } else {
+            console.log("Matricula incorreta! Digite novamente. \n");
+            updateById();
+        }
     });
 }
 
-function deleteById(id) {
-
+function deleteById() {
+    console.log("------EXCLUIR------");
+    rl.question("Digite a matricula ou (0) para voltar: ", res => {
+        let index = getByid(parseInt(res));
+        if (index !== -1) {
+            data.splice(index, 1);
+            fileUpdate(data);
+            console.log("\n\n Excluido com sucesso!");
+            setTimeout(() => {
+                console.clear();
+                menu();
+            }, 1000);
+        } else if (res == 0) {
+            console.clear()
+            menu();
+        } else {
+            console.log("Matricula incorreta! Digite novamente. \n");
+            deleteById();
+        }
+    });
 }
 
 function fileUpdate(data) {
