@@ -1,10 +1,11 @@
 var fs = require('fs');
 
 const readline = require('readline');
-var menu = '1) Criar \n' +
+var optionsMenu = '1) Criar \n' +
     '2) Listar \n' +
     '3) Atualizar \n' +
-    '4) Deletar \n'
+    '4) Deletar \n' +
+    '0) Sair \n'
 var data = loadFile();
 
 const rl = readline.createInterface({
@@ -12,30 +13,43 @@ const rl = readline.createInterface({
     output: process.stdout
 });
 
-rl.question(menu, res => {
-    switch (parseInt(res)) {
-        case 1:
-            create()
-            break;
-        case 2:
-            list()
-            break;
-        case 3:
-            updateById()
-            break;
-        case 4:
-            deleteById()
-            break;
-        default:
-            console.log("Digite uma opção valida");
-            break;
-    }
+menu();
 
-    // rl.close();
-});
+function menu() {
+    rl.question(optionsMenu, res => {
+        switch (parseInt(res)) {
+            case 1:
+                console.clear();
+                create();
+                break;
+            case 2:
+                console.clear();
+                list();
+                break;
+            case 3:
+                console.clear();
+                update();
+                break;
+            case 4:
+                console.clear();
+                deleteById();
+                break;
+            case 0:
+                console.clear();
+                console.log("Saindo!");
+                rl.close();
+                break;
+            default:
+                console.clear();
+                console.log("Opção invalida digite novamente! \n");
+                menu();
+                break;
+        }
+    });
+}
 
 function create() {
-    console.log("Criar");
+    console.log("------CRIAR------");
     var name;
     var role;
     var input;
@@ -44,31 +58,54 @@ function create() {
         rl.question("Digite o cargo: ", res => {
             role = res;
             input = {
-                id: data[data.length-1] ? data[data.length-1].id + 1 : 1,
+                id: data[data.length - 1] ? data[data.length - 1].id + 1 : 1,
                 obj: {
                     name: name,
                     role: role
                 }
             }
             data.push(input)
-            fileUpdate(JSON.stringify(data));
+            fileUpdate(data);
+            console.log("\n\n Criado com sucesso!");
+            setTimeout(() => {
+                console.clear();
+                menu();
+            }, 1000);
         });
     });
 }
 
 function list() {
-    console.clear();
-    console.log("------LISTAR-------");
+    console.log("------LISTAR------");
     data.forEach(element => {
         console.log(element.id + ' - ' + element.obj.name + ' - ' + element.obj.role);
     });
+    console.log("___________________\n\n");
+    menu();
 }
 
-function updateById() {
-    rl.question("Digite a matricula: ", res => {
-        getByid(parseInt(res));
+function update() {
+    console.log("------ALTERAÇÂO------");
 
-    })
+    rl.question("Digite a matricula: ", res => {
+        let index = getByid(parseInt(res));
+        var people = data[index]
+        console.log("Nome: " + people.obj.name);
+        console.log("Cargo: " + people.obj.role);
+
+        rl.question("\n Novo nome: ", newName => {
+            rl.question("Novo cargo: ", newRole => {
+                data[index].obj.name = newName;
+                data[index].obj.role = newRole;
+                fileUpdate(data);
+                console.log("\n\n Alterado com sucesso!");
+                setTimeout(() => {
+                    console.clear();
+                    menu();
+                }, 1000);
+            });
+        });
+    });
 }
 
 function deleteById(id) {
@@ -76,7 +113,7 @@ function deleteById(id) {
 }
 
 function fileUpdate(data) {
-    fs.writeFile("Banco.txt", data, function (err) {
+    fs.writeFile("Banco.txt", JSON.stringify(data), function (err) {
         if (err) {
             throw err;
         }
@@ -88,10 +125,5 @@ function loadFile() {
 }
 
 function getByid(id) {
-    data.forEach(element => {
-        if(element.id == id) {
-            console.log(data[data.indexOf(element)]);
-            return data[data.indexOf(element)];
-        }
-    });
+    return data.indexOf(data.find(item => item.id === id) !== -1 ? data.find(item => item.id === id) : {});
 }
