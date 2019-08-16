@@ -94,7 +94,7 @@ function updateById() {
             console.log("Nome: " + people.obj.name);
             console.log("Cargo: " + people.obj.role);
 
-            rl.question("\n Novo nome: ", newName => {
+            rl.question("\nNovo nome: ", newName => {
                 rl.question("Novo cargo: ", newRole => {
                     data[index].obj.name = newName;
                     data[index].obj.role = newRole;
