@@ -1,1 +1,0 @@
-[{"id":1,"obj":{"name":"Elison","role":"Programador Junior"}},{"id":2,"obj":{"name":"Dussmann","role":"Programador bocó"}}]
